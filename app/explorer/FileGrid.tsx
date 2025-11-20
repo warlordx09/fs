@@ -31,9 +31,9 @@ export default function FileGrid({ items }: FileGridProps) {
   useEffect(() => {
   const loadRoot = async () => {
     try {
-      // Fetch root directory contents
+
       const res = await API.get("/directory", { path: "/" });
-      reload(res.children);
+
 
       // Fetch disk usage info
       const diskRes = await API.get("/disk-usage", { path: "/" });
@@ -43,7 +43,7 @@ export default function FileGrid({ items }: FileGridProps) {
         freeBytes: diskRes.freeBytes,
       });
 
-      setCurrentPath("/"); // set current path to root
+      setCurrentPath("/");
     } catch (err) {
       console.error("Failed to load root:", err);
     }
@@ -60,12 +60,12 @@ export default function FileGrid({ items }: FileGridProps) {
     const cached = cache.find(f => f.name === fullPath);
 
     if (cached) {
-      // Load instantly from cache
+
       setCurrentPath(fullPath);
-      reload(cached.children);
+
       setLoading(false);
     } else {
-      // First-time load → show spinner
+
       setLoading(true);
       try {
         const data = await new Promise<{ children: FSNode[] }>((resolve, reject) => {
@@ -76,14 +76,14 @@ export default function FileGrid({ items }: FileGridProps) {
             } catch (err) {
               reject(err);
             }
-          }, 800); // spinner delay
+          }, 800);
         });
 
         setCurrentPath(fullPath);
-        reload(data.children);
+
         setLoading(false);
 
-        // Add folder to cache (LRU)
+
         const newCache = cache.filter(f => f.name !== fullPath);
         newCache.unshift({ name: fullPath, type: "directory", children: data.children });
         if (newCache.length > 3) newCache.pop();
@@ -293,7 +293,7 @@ export default function FileGrid({ items }: FileGridProps) {
       {editorOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[999]">
           <div className="bg-[#1A1D21] rounded-lg shadow-xl w-[600px] max-w-full">
-            {/* Header with Close button */}
+
             <div className="flex justify-between items-center px-4 py-2 border-b border-white/10">
               <div className="text-white text-sm">{editorPath}</div>
               <button
@@ -318,7 +318,7 @@ export default function FileGrid({ items }: FileGridProps) {
               />
             )}
 
-            {/* Footer */}
+
             {!loading && (
               <div className="flex justify-end border-t border-white/10 px-4 py-2">
                 <button

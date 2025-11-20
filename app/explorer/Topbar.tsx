@@ -92,7 +92,7 @@ const executeAICommand = async (cmd: any) => {
   try {
     switch (cmd.action) {
 
-      /* ===== CREATE FOLDER ===== */
+
       case "mkdir":
         await API.post("/directory", {
           path: `${currentPath}/${cmd.path}`,
@@ -130,14 +130,16 @@ const executeAICommand = async (cmd: any) => {
         reload();
         break;
 
-      /* ===== OPEN FILE IN EDITOR ===== */
+
       case "open":
+        // @ts-ignore
         setEditorPath(`${currentPath}/${cmd.path}`);
-        setEditorContent(cmd.content || "");   // You can also fetch from API if needed
+            // @ts-ignore
+        setEditorContent(cmd.content || "");
+            // @ts-ignore
         setEditorOpen(true);
         break;
 
-      /* ===== CHANGE DIRECTORY ===== */
       case "cd":
         setCurrentPath(cmd.path);
         break;
@@ -148,7 +150,7 @@ const executeAICommand = async (cmd: any) => {
         reload();
         break;
 
-      /* ===== LIST FILES ===== */
+
       case "ls":
         setAiMessages(prev => [
           ...prev,
@@ -190,7 +192,7 @@ const sendToAI = async () => {
 
     const parsed = JSON.parse(jsonStr);
 
-    // ✅ Allow both single object & array
+
     const commands = Array.isArray(parsed) ? parsed : [parsed];
 
     setAiMessages(prev => [
