@@ -1,4 +1,4 @@
-const BASE = "http://localhost:5000/fs";
+const BASE = "http://ec2-13-201-115-54.ap-south-1.compute.amazonaws.com:5000/fs";
 
 export const API = {
   get: async (path: string, params?: Record<string, string>) => {
@@ -16,6 +16,7 @@ export const API = {
   },
 
   post: async (path: string, body?: any) => {
+
     const res = await fetch(BASE + path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
