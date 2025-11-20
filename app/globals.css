@@ -6,7 +6,9 @@
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-background: #131619;
+  --color-folder:#1A1D21;
+  --color-greenfolder:#24AE7C;
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);

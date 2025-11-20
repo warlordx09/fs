@@ -40,7 +40,7 @@ export default function FileExplorer() {
       }}
     >
       <div className="flex w-full h-full">
-        <Sidebar />
+        {/* <Sidebar /> */}
         <div className="flex flex-col flex-1">
           <Topbar />
           <FileGrid items={items} />
