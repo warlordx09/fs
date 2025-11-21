@@ -14,6 +14,11 @@ export default function FileExplorer() {
   const [clipboard, setClipboard] = useState<ClipboardItem | null>(null);
   const [selectedItem, setSelectedItem] = useState<FSNode | null>(null);
 
+  // ---- EDITOR STATE ----
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorContent, setEditorContent] = useState("");
+  const [editorPath, setEditorPath] = useState("");
+
   const load = async () => {
     try {
       const res = await API.get(`/directory?path=${encodeURIComponent(currentPath)}`);
@@ -37,13 +42,20 @@ export default function FileExplorer() {
         selectedItem,
         setSelectedItem,
         reload: load,
+
+        // ---- EDITOR STATE ----
+        editorOpen,
+        setEditorOpen,
+        editorContent,
+        setEditorContent,
+        editorPath,
+        setEditorPath,
       }}
     >
       <div className="flex w-full h-full">
 
         <div className="flex flex-col flex-1">
           <Topbar />
-
           <FileGrid items={items} />
         </div>
       </div>

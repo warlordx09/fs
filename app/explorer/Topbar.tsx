@@ -6,9 +6,24 @@ import { API } from "@/app/lib/api";
 import { useState } from "react";
 
 export default function Topbar() {
-  const { currentPath, setCurrentPath, clipboard, setClipboard, reload ,selectedItem } = useFileExplorer();
+const {
+  currentPath,
+  setCurrentPath,
+  clipboard,
+  setClipboard,
+  reload,
+  selectedItem,
+
+  editorContent,
+  setEditorContent,
+  editorOpen,
+  setEditorOpen,
+  editorPath,
+  setEditorPath,
+} = useFileExplorer();
   const [open, setOpen] = useState(false);
   const [cmdInput, setCmdInput] = useState("");
+
 const [cmdOutput, setCmdOutput] = useState<string[]>([]);
   const [showCMD, setShowCMD] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
@@ -88,11 +103,23 @@ const [aiInput, setAiInput] = useState("");
     const newPath = "/" + parts.slice(0, parts.length - 1).join("/");
     setCurrentPath(newPath || "/");
   };
+
+  const typeIntoEditor = (finalText: string, setEditorContent: any, speed = 30) => {
+  let index = 0;
+
+  const interval = setInterval(() => {
+    setEditorContent((prev: string) => prev + finalText[index]);
+    index++;
+
+    if (index >= finalText.length) {
+      clearInterval(interval);
+    }
+  }, speed);
+};
 const executeAICommand = async (cmd: any) => {
   try {
+    console.log('this are ai commads',cmd)
     switch (cmd.action) {
-
-
       case "mkdir":
         await API.post("/directory", {
           path: `${currentPath}/${cmd.path}`,
@@ -101,7 +128,7 @@ const executeAICommand = async (cmd: any) => {
         reload();
         break;
 
-      /* ===== CREATE EMPTY FILE ===== */
+
       case "create_file":
         await API.post("/file", {
           path: `${currentPath}/${cmd.path}`,
@@ -111,25 +138,39 @@ const executeAICommand = async (cmd: any) => {
         reload();
         break;
 
-      /* ===== WRITE (OVERWRITE) INTO A FILE ===== */
+
       case "write":
-        await API.put("/file", {              // 🔥 IMPORTANT: use PUT (your save system)
+        await API.put("/file", {
           path: `${currentPath}/${cmd.path}`,
           content: cmd.content || "",
         });
         reload();
         break;
 
-      /* ===== CREATE + WRITE FILE ===== */
-      case "create_and_write":
-        await API.post("/file", {
-          path: `${currentPath}/${cmd.path}`,
-          content: cmd.content || "",
-          permissions: 0o644,
-        });
-        reload();
-        break;
+case "create_and_write":
+  await API.post("/file", {
+    path: `${currentPath}/${cmd.path}`,
+    content: "",
+    permissions: 0o644,
+  });
 
+  reload();
+
+  // CLOSE AI ASSISTANT
+  setShowAIAssistant(false);
+
+  // OPEN EDITOR
+  // @ts-ignore
+  setEditorPath(`${currentPath}/${cmd.path}`);
+  // @ts-ignore
+  setEditorContent("");
+  // @ts-ignore
+  setEditorOpen(true);
+
+  // START TYPING EFFECT
+  typeIntoEditor(cmd.content || "", setEditorContent, 25);
+
+  break;
 
       case "open":
         // @ts-ignore
@@ -177,6 +218,8 @@ const executeAICommand = async (cmd: any) => {
 
 const sendToAI = async () => {
   const text = aiInput.trim();
+  console.log("goging in ")
+  alert("again")
   if (!text) return;
 
   setAiMessages(prev => [...prev, { role: "user", text }]);
@@ -199,7 +242,7 @@ const sendToAI = async () => {
       ...prev,
       { role: "assistant", text: "✔ Commands received. Executing…" }
     ]);
-
+    console.log("commands",commands)
     for (const cmd of commands) {
       await executeAICommand(cmd);
     }
@@ -364,20 +407,19 @@ const sendToAI = async () => {
   <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
     <div className="bg-black text-green-400 p-4 w-[600px] rounded shadow-lg border border-green-600">
 
-      {/* Header */}
       <div className="flex justify-between mb-2">
         <h2 className="text-lg">Terminal</h2>
         <button onClick={() => setShowCMD(false)} className="text-red-400">✕</button>
       </div>
 
-      {/* Output */}
+
       <div className="h-64 overflow-auto bg-black border border-green-700 p-2 text-sm">
         {cmdOutput.map((line, i) => (
           <div key={i}>{line}</div>
         ))}
       </div>
 
-      {/* Input */}
+
       <input
         autoFocus
         value={cmdInput}
@@ -391,16 +433,13 @@ const sendToAI = async () => {
 )}
 {showAIAssistant && (
   <div className="fixed inset-0 bg-black/40 z-50">
-    {/* Sidebar */}
-    <div className="absolute right-0 top-0 h-full w-[380px] bg-[#0F1114] border-l border-white/10 shadow-xl flex flex-col">
 
-      {/* Header */}
-      <div className="p-4 border-b border-white/10 flex justify-between items-center">
+    <div className="absolute right-0 top-0 h-full w-[380px] bg-[#0F1114] border-l border-white/10 shadow-xl flex flex-col">
+     <div className="p-4 border-b border-white/10 flex justify-between items-center">
         <div className="text-white font-semibold">AI Assistant</div>
         <button onClick={() => setShowAIAssistant(false)} className="text-red-400">✕</button>
       </div>
 
-      {/* Chat Area */}
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         {aiMessages.map((msg, index) => (
           <div
@@ -416,7 +455,7 @@ const sendToAI = async () => {
         ))}
       </div>
 
-      {/* Input */}
+
       <div className="p-3 border-t border-white/10 flex gap-2">
         <input
           value={aiInput}

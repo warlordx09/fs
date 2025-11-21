@@ -15,16 +15,30 @@ type FileGridProps = {
 };
 
 export default function FileGrid({ items }: FileGridProps) {
-  const { currentPath, setCurrentPath, clipboard, setClipboard, selectedItem, setSelectedItem, reload } = useFileExplorer();
+const {
+  currentPath,
+  setCurrentPath,
+  clipboard,
+  setClipboard,
+  selectedItem,
+  setSelectedItem,
+  reload,
+
+  // NEW EDITOR STATE
+  editorOpen,
+  setEditorOpen,
+  editorContent,
+  setEditorContent,
+  editorPath,
+  setEditorPath,
+} = useFileExplorer();
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; item: FSNode | null } | null>(null);
   const [errorPopup, setErrorPopup] = useState<string | null>(null);
   const [diskInfo, setDiskInfo] = useState<{ totalBytes: number; usedBytes: number; freeBytes: number } | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [cache, setCache] = useState<FSNode[]>([]);
-  const [editorOpen, setEditorOpen] = useState(false);
-  const [editorContent, setEditorContent] = useState("");
-  const [editorPath, setEditorPath] = useState("");
+
 
   const containerRef = useRef<HTMLDivElement>(null);
 
