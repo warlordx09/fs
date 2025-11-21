@@ -1,4 +1,4 @@
-const BASE = "http://localhost:5000/fs";
+const BASE = "http://3.109.208.236:5000/fs";
 
 export const API = {
   get: async (path: string, params?: Record<string, string>) => {
